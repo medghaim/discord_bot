@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 import wikipedia
+from imgurpython import ImgurClient
 
 class Internet():
 	def __init__(self, bot):
@@ -75,14 +76,17 @@ class Internet():
 		""" Searches imgur for you!
 		!imgur "test me now" 5
 		!imgur "test me now" """
-		url = 'IMGUR'+"+".join(search_str.split())
+		client = ImgurClient(self.bot.credentials.imgur.id, self.bot.credentials.imgur.secret)
+		
+		#out = '' 
 		if num_links == 0:
-			await self.bot.say(url)
+			await self.bot.say('url')
 		elif num_links > 0:
 			await self.bot.say('parsing '+str(num_links)+' links')
 
 	@commands.command()
 	async def wiki(self, search_str : str):
+		"""Searches Wikipedia with the supplied string"""
 		page = wikipedia.page(search_str)
 		await self.bot.say(page.url)
 

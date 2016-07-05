@@ -49,5 +49,5 @@ async def on_command_error(error, ctx):
 bot.credentials = initializer.get_credentials()
 initializer.init_modules(bot, startup_extensions) ##Initialize all modules
 
-###RUNS AND STARTS THE BOT
+###RUNS AND STARTS THE BOT ------------------ START CLIENT API'S! (ie, imgur!)
 bot.run(bot.credentials.token)
