@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+import wikipedia
+
 class Internet():
 	def __init__(self, bot):
 		self.bot = bot
@@ -79,7 +81,11 @@ class Internet():
 		elif num_links > 0:
 			await self.bot.say('parsing '+str(num_links)+' links')
 
-		
+	@commands.command()
+	async def wiki(self, search_str : str):
+		page = wikipedia.page(search_str)
+		await self.bot.say(page.url)
+
 	@commands.command()
 	async def tv(self, search_str : str):
 		"""Searches primewire for you!"""

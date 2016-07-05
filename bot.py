@@ -7,8 +7,6 @@ import asyncio
 from discord.ext import commands
 from cogs.utils import initializer
 
-import json
-
 description = '''A multi-purpose written to do bot things by its lazy master.'''
 
 startup_extensions = [
