@@ -1,7 +1,9 @@
 """
-Please note: All credit goes to http://stackoverflow.com/users/4279/j-f-sebastian
-This is a very clean/simple/easy to use implementation of parsing 
-and evaluating a mathematical expression in an AST
+Please note: All credit for this goes to:
+     http://stackoverflow.com/users/4279/j-f-sebastian
+
+This is a very clean/simple/easy to use, recursive implementation
+of parsing and evaluating a mathematical expression in an AST
 """
 
 import ast
