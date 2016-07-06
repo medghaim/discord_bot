@@ -12,13 +12,13 @@ def get_credentials():
 	Credentials = namedtuple('Credentials', ['token', 'imgur', 'reddit', 'youtube']) 
 	Imgur = namedtuple('Imgur', ['id', 'secret'])
 	Reddit = namedtuple('Reddit', ['id', 'secret'])
-	YouTube = namedtuple('Youtube', ['devkey', 'id', 'secret'])
+	YouTube = namedtuple('Youtube', ['key', 'id', 'secret'])
 
 	##Step 2: Create instances of the named tuples - 3) CREATE NEW INSTANCE OF NAMED TUPLE
 	credentials = get_json() ##reads the json file
 	imgur = Imgur(credentials['imgur']['id'], credentials['imgur']['secret'])
 	reddit = Reddit(credentials['reddit']['id'], credentials['reddit']['secret']) 
-	youtube = YouTube(credentials['youtube']['dev_key'], credentials['youtube']['client-id'], credentials['youtube']['client-secret'])
+	youtube = YouTube(credentials['youtube']['key'], credentials['youtube']['id'], credentials['youtube']['secret'])
 
 	##Step 3: Dynamically adding .credentials attr to bot. 4) ADD NEW INSTANCE OF NEW NAMED TUPLE HERE
 	return Credentials(credentials['bot']['token'], imgur, reddit, youtube)
