@@ -3,7 +3,7 @@ from discord.ext import commands
 from collections import namedtuple
 
 def get_json():
-	with open('cogs/utils/credentials.json') as file:
+	with open('credentials.json') as file:
 		return json.load(file)
 
 def get_credentials():

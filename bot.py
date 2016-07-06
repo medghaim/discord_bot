@@ -5,7 +5,8 @@ MAIN SCRIPT - Sets up and runs the bot, and defines how to handle events.
 import discord
 import asyncio
 from discord.ext import commands
-from cogs.utils import initializer
+
+from utils import initializer
 
 description = '''A multi-purpose written to do bot things by its lazy master.'''
 

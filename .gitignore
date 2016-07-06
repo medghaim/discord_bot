@@ -1,2 +1,2 @@
-cogs/utils/credentials.json
-*__pycache__
+credentials.json
+*__pycache__*

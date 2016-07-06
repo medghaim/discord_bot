@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from cogs.utils import output
+from utils import output
 
 class Discord_Functionality():
 
