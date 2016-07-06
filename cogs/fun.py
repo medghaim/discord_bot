@@ -12,6 +12,7 @@ class Fun():
 
 	@mlg.command(name='me', pass_context=True)
 	async def _me(self, ctx):
+		""" YOUR epicly awesome gamertag """
 		await ctx.command.parent.callback(self, ctx.message.author.name)
 
 def setup(bot):

@@ -1,16 +1,16 @@
 from discord.ext import commands
-from cogs.utils import output
-from cogs.utils import math
+
+from cogs.utils import output, math #Helpers
 
 class Utilities():
 	def __init__(self, bot):
 		self.bot = bot
 
-	@commands.command()
-	async def math(self, expr : str):
-		""" Evaluates a math expression """
-		await output.speak(self.bot, math.eval_expr(expr))
-		#await output.speak(self.bot, ", ".join(args))
+	@commands.command(pass_context=True)
+	async def math(self, ctx, expr : str):
+		"""Evaluates a math expression"""
+		#await self.bot.delete_message(ctx.message)
+		await output.speak(self.bot, '{} = {}'.format(expr, math.eval_expr(expr)))
 		
 
 def setup(bot):

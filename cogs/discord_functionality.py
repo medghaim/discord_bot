@@ -29,7 +29,7 @@ class Discord_Functionality():
 			Can also mention a specific player and report only their game status."""
 		status_str = ''
 
-		### IF NO ARGS SUPPLIED
+		#if argument was supplied
 		if len(mentioned_members) == 0:
 			##retrieve all voice channels
 			voice_channels = (ch for ch in ctx.message.server.channels if ch.type == discord.ChannelType.voice)
@@ -38,7 +38,7 @@ class Discord_Functionality():
 				gaming_members = (g_mem for g_mem in ch.voice_members if g_mem.game != None)
 				for member in gaming_members:
 					status_str += '**{}** _({})_\n'.format(member.name, member.game.name)
-		###IF ARGS SUPPLIED
+		#if no argument was supplied
 		else: 
 			for member in (m for m in mentioned_members if m.game != None):
 				status_str += '**{}** _({})_\n'.format(member.name, member.game.name)
@@ -51,8 +51,7 @@ class Discord_Functionality():
 	@commands.command(pass_context=True, aliases=['del'])
 	async def delete(self, ctx, count=1):
 		""" Deletes commanders last X messages. 
-		Only checks the channels last 500 messages
-		"""
+		Only checks the channels last 500 messages"""
 		if(count > 99):
 			raise commands.BadArgument('Cannot delete more than 99 messages at a time.')
 
@@ -66,11 +65,11 @@ class Discord_Functionality():
 			if remaining == 0:
 				break
 
-		if remaining == count: #no msgs deleted, none found to delete.
+		if remaining == count:
 			raise commands.CommandError('I couldn\'t find any of your messages to delete.')
 		else:
-			user_logs.append(ctx.message) ##delete the command too!
-			await self.bot.delete_messages(user_logs) #delete the desired logs
+			user_logs.append(ctx.message) 
+			await self.bot.delete_messages(user_logs)
 
 	@commands.command(pass_context=True)
 	async def msgcount(self, ctx):
@@ -108,8 +107,7 @@ class Discord_Functionality():
 
 	@last.command(name='me', pass_context=True)
 	async def _me(self, ctx, count=1):
-		""" Retrieves the callers last X commands
-		Default = 1"""
+		""" Retrieves the callers last X commands"""
 		await ctx.command.parent.callback(self, ctx, ctx.message.author, count) #calls last() with caller as the member obj
 
 def setup(bot):

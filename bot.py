@@ -47,7 +47,7 @@ async def on_command_error(error, ctx):
 
 #if __name__ == 'main': ##only cally if the script is executed, not imported.
 bot.credentials = initializer.get_credentials()
-initializer.init_modules(bot, startup_extensions) ##Initialize all modules
+initializer.init_modules(bot, startup_extensions) #initialize all modules
 
-###RUNS AND STARTS THE BOT ------------------ START CLIENT API'S! (ie, imgur!)
+#Runs and starts the bot
 bot.run(bot.credentials.token)
