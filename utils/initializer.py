@@ -9,17 +9,19 @@ def get_json():
 def get_credentials():
 	###CONSTRUCTING bot.credentials ATTRIBUTE -- THESE ARE IMMUTABLE VALUES (const; cannot be changed)
 	##Step 1: Creating named tuples used to construct bot.credentials - 1) ADD NEW CRED ATTR and 2) CREATE NEW NAMED TUPLE
-	Credentials = namedtuple('Credentials', ['token', 'imgur', 'reddit']) 
+	Credentials = namedtuple('Credentials', ['token', 'imgur', 'reddit', 'youtube']) 
 	Imgur = namedtuple('Imgur', ['id', 'secret'])
-	Reddit = namedtuple('Reddit', ['id', 'secret']) 
+	Reddit = namedtuple('Reddit', ['id', 'secret'])
+	YouTube = namedtuple('Youtube', ['devkey', 'id', 'secret'])
 
 	##Step 2: Create instances of the named tuples - 3) CREATE NEW INSTANCE OF NAMED TUPLE
 	credentials = get_json() ##reads the json file
 	imgur = Imgur(credentials['imgur']['id'], credentials['imgur']['secret'])
 	reddit = Reddit(credentials['reddit']['id'], credentials['reddit']['secret']) 
+	youtube = YouTube(credentials['youtube']['dev_key'], credentials['youtube']['client-id'], credentials['youtube']['client-secret'])
 
 	##Step 3: Dynamically adding .credentials attr to bot. 4) ADD NEW INSTANCE OF NEW NAMED TUPLE HERE
-	return Credentials(credentials['bot']['token'], imgur, reddit)
+	return Credentials(credentials['bot']['token'], imgur, reddit, youtube)
 
 def init_modules(bot, modules):
 	success = ''
