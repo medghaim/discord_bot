@@ -76,24 +76,20 @@ class Administration():
 		if len(args) > 1: 
 			try:
 				mins = int(args[0])
-				args = args[1:] # remove the time arg
+				args = args[1:] # remove the time arg (only if it exists, and after we've recorded it)
 				if mins < 0:
-					raise commands.BadArgument('Y U DO THIS')
+					raise commands.BadArgument('I cannot do that. You are creating a time paradox.')
 			except ValueError:
 				pass
 
-		# construct the list of members to be deleted. ignore bad arguments. TODO: CHECK IF ALREADY IN LIST
-		del_list = []
+		# construct the list of members to be banned. ignore bad arguments. TODO: CHECK IF ALREADY IN LIST
 		for arg in args:
 			member = find_member(arg, ctx.message.server.members)
 			if member != None:
-				del_list.append(member)
+				await self.bot.say('\t{} banned for {} mins\n'.format(member.name, mins))	# ban here
 			else:
-				await self.bot.say('Member \'{}\' not found.'.format(arg))
+				await self.bot.say('\tMember \'{}\' not found.\n'.format(arg))				# inform that member not found
 
-		# ban the members.
-		for member in del_list:
-			await self.bot.say('{} banned for {} minutes.'.format(member.name, mins))
 
 	@commands.command()
 	async def unban(self, *mentions : str):
