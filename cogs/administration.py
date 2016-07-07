@@ -64,10 +64,9 @@ class Administration():
 			
 		if len(kicked) > 0:
 			await output.speak(self.bot, 'Kicked: {}'.format(", ".join(kicked)))
-
+	"""
 	@commands.command(pass_context=True)
 	async def ban(self, ctx, *args : str):
-		""" Bans the mentioned people (temp ban optional) """
 		mins = 0
 		if len(args) == 0:
 			raise commands.BadArgument('Missing required arguments!')
@@ -89,7 +88,19 @@ class Administration():
 				await self.bot.say('\t{} banned for {} mins\n'.format(member.name, mins))	# ban here
 			else:
 				await self.bot.say('\tMember \'{}\' not found.\n'.format(arg))				# inform that member not found
+	"""
+	@commands.command(pass_context=True)
+	async def ban(self, ctx, time, *members: discord.Member):
+		""" Ban the mentioned members (temp ban optional) 
+		You can specify a time (in mins) before listing members, to specify how long to ban them for!"""
+		try:
+			time = int(time) #time = int
+		except ValueError: #time = another member
+			converter = commands.MemberConverter(ctx, time)
+			members = list(members)
+			members.insert(0, converter.convert())  # Let this raise to be consistent with the type hinting convertion
 
+		await self.bot.say(' '.join([m.name for m in members]))
 
 	@commands.command()
 	async def unban(self, *mentions : str):
