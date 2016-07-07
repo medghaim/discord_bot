@@ -15,26 +15,19 @@ class Discord_Functionality():
 	@commands.command(pass_context=True)
 	async def banned(self, ctx):
 		""" Says who is banned on the server """
-		banned = ''
-		for banned_user in (await self.bot.get_bans(ctx.message.server)):
-			banned += '**'+banned_user.name+'**\n'
-		if len(banned) > 0:
-			await output.speak(self.bot, 'Ban List: \n'+banned)
-		else:
-			await output.speak(self.bot, 'No _current_ bans. Not yet at least.')
-
+		banned = "\n".join(usr.name for usr in (await self.bot.get_bans(ctx.message.server)))
+		if len(banned) == 0:
+			banned = 'No current bans.'
+		await output.speak(self.bot, banned)
 
 	@commands.command(pass_context=True, aliases=['whom'])
 	async def who(self, ctx, *members : discord.Member):
 		""" A report of members currently playing games.
 			Can also mention specific player(s)"""
 		members = members or ctx.message.server.members
-
 		status = "\n".join('{0.name} ({0.game.name})'.format(m) for m in members if m.voice_channel and m.game)
-
 		if len(status) == 0:
 			status = 'No one currently playing.'
-			
 		await output.speak(self.bot, status)
 
 	@commands.command(pass_context=True, aliases=['del'])
