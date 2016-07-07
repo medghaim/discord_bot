@@ -103,27 +103,27 @@ class Administration():
 		await self.bot.say(' '.join([m.name for m in members]))
 
 	@commands.command()
-	async def unban(self, *mentions : str):
+	async def unban(self, *members : discord.Member):
 		""" Unbans the mentioned people """
 		pass
 
-	@commands.command()
-	async def mute(self, *args : str):
+	@commands.command(pass_context=True)
+	async def mute(self, ctx, time, *members: discord.Member):
 		""" Mutes the mentioned people (temp mute optional) """
 		pass
 
 	@commands.command()
-	async def unmute(self, *mentions : str):
+	async def unmute(self, *members : discord.Member):
 		""" Unmutes the mentioned people """
 		pass
 
-	@commands.command()
-	async def deafen(self, *args : str):
+	@commands.command(pass_context=True)
+	async def deafen(self, ctx, time, *members: discord.Member):
 		""" Deafens the mentioned people (temp deafen optional) """
 		pass
 
 	@commands.command()
-	async def undeafen(self, *mentions : str):
+	async def undeafen(self, *members : discord.Member):
 		""" Undeafens the mentioned people"""
 		
 def find_member(mention, members):
