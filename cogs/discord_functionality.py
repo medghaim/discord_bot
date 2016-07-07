@@ -34,24 +34,14 @@ class Discord_Functionality():
 	async def delete(self, ctx, count=1):
 		""" Deletes commanders last X messages. 
 		Only checks the channels last 500 messages"""
-		if(count > 99):
-			raise commands.BadArgument('Cannot delete more than 99 messages at a time.')
-
 		logs = self.bot.logs_from(ctx.message.channel, limit=500, before=ctx.message)
-		remaining = count
-		user_logs = []
 		async for log in logs:
-			if log.author == ctx.message.author and remaining > 0:
-				user_logs.append(log)
-				remaining -= 1
-			if remaining == 0:
+			if log.author == ctx.message.author and count > 0:
+				await self.bot.delete_message(log)
+				count -= 1
+			if count == 0:
 				break
-
-		if remaining == count:
-			raise commands.CommandError('I couldn\'t find any of your messages to delete.')
-		else:
-			user_logs.append(ctx.message) 
-			await self.bot.delete_messages(user_logs)
+		await self.bot.delete_message(ctx.message)
 
 	@commands.command(pass_context=True)
 	async def msgcount(self, ctx):
