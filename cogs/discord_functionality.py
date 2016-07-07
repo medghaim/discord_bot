@@ -28,19 +28,14 @@ class Discord_Functionality():
 	async def who(self, ctx, *members : discord.Member):
 		""" A report of members currently playing games.
 			Can also mention specific player(s)"""
-		if len(members) == 0:
-			memlist = ctx.message.server.members
-		else:
-			memlist = members
+		members = members or ctx.message.server.members
 
-		members = [m for m in memlist if m.voice_channel and m.game]
-		if len(members) == 0: # no members playing games
-			await output.speak(self.bot, 'No one currently playing.')
-			return
+		status = "\n".join('{0.name} ({0.game.name})'.format(m) for m in members if m.voice_channel and m.game)
 
-		status_str = "\n".join('{0.name} ({0.game.name})'.format(m) for m in members)
-
-		await output.speak(self.bot, status_str)
+		if len(status) == 0:
+			status = 'No one currently playing.'
+			
+		await output.speak(self.bot, status)
 
 	@commands.command(pass_context=True, aliases=['del'])
 	async def delete(self, ctx, count=1):
