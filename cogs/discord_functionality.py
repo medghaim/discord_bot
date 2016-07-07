@@ -23,30 +23,24 @@ class Discord_Functionality():
 		else:
 			await output.speak(self.bot, 'No _current_ bans. Not yet at least.')
 
+
 	@commands.command(pass_context=True, aliases=['whom'])
-	async def who(self, ctx, *mentioned_members : discord.Member):
+	async def who(self, ctx, *members : discord.Member):
 		""" A report of members currently playing games.
-			Can also mention a specific player and report only their game status."""
-		status_str = ''
-
-		#if argument was supplied
-		if len(mentioned_members) == 0:
-			##retrieve all voice channels
-			voice_channels = (ch for ch in ctx.message.server.channels if ch.type == discord.ChannelType.voice)
-			for ch in voice_channels: ##search all voice_channels in server
-				##members who are currently gaming
-				gaming_members = (g_mem for g_mem in ch.voice_members if g_mem.game != None)
-				for member in gaming_members:
-					status_str += '**{}** _({})_\n'.format(member.name, member.game.name)
-		#if no argument was supplied
-		else: 
-			for member in (m for m in mentioned_members if m.game != None):
-				status_str += '**{}** _({})_\n'.format(member.name, member.game.name)
-
-		if len(status_str) > 0:
-			await output.speak(self.bot, status_str)
+			Can also mention specific player(s)"""
+		if len(members) == 0:
+			memlist = ctx.message.server.members
 		else:
+			memlist = members
+
+		members = [m for m in memlist if m.voice_channel and m.game]
+		if len(members) == 0: # no members playing games
 			await output.speak(self.bot, 'No one currently playing.')
+			return
+
+		status_str = "\n".join('{0.name} ({0.game.name})'.format(m) for m in members)
+
+		await output.speak(self.bot, status_str)
 
 	@commands.command(pass_context=True, aliases=['del'])
 	async def delete(self, ctx, count=1):

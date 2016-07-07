@@ -64,53 +64,38 @@ class Administration():
 			
 		if len(kicked) > 0:
 			await output.speak(self.bot, 'Kicked: {}'.format(", ".join(kicked)))
-	"""
-	@commands.command(pass_context=True)
-	async def ban(self, ctx, *args : str):
-		mins = 0
-		if len(args) == 0:
-			raise commands.BadArgument('Missing required arguments!')
 
-		# if there are two or more args, and the first arg is an int
-		if len(args) > 1: 
-			try:
-				mins = int(args[0])
-				args = args[1:] # remove the time arg (only if it exists, and after we've recorded it)
-				if mins < 0:
-					raise commands.BadArgument('I cannot do that. You are creating a time paradox.')
-			except ValueError:
-				pass
-
-		# construct the list of members to be banned. ignore bad arguments. TODO: CHECK IF ALREADY IN LIST
-		for arg in args:
-			member = find_member(arg, ctx.message.server.members)
-			if member != None:
-				await self.bot.say('\t{} banned for {} mins\n'.format(member.name, mins))	# ban here
-			else:
-				await self.bot.say('\tMember \'{}\' not found.\n'.format(arg))				# inform that member not found
-	"""
 	@commands.command(pass_context=True)
 	async def ban(self, ctx, time, *members: discord.Member):
 		""" Ban the mentioned members (temp ban optional) 
 		You can specify a time (in mins) before listing members, to specify how long to ban them for!"""
+		# Time is 'optional'- it will either be eval'd to a time, or a member (ie, no time specified).
 		try:
-			time = int(time) #time = int
-		except ValueError: #time = another member
+			time = int(time)
+			#await self.bot.say('{} banned for {} mins.'.format(', '.join([m.name for m in members]), time))
+		except ValueError:
 			converter = commands.MemberConverter(ctx, time)
 			members = list(members)
-			members.insert(0, converter.convert())  # Let this raise to be consistent with the type hinting convertion
+			members.insert(0, converter.convert())  # Let this raise to be consistent with the type hinting conversion
+			#await self.bot.say('{} banned indefinitely.'.format(', '.join([m.name for m in members])))
 
-		await self.bot.say(' '.join([m.name for m in members]))
-
-	@commands.command()
-	async def unban(self, *members : discord.Member):
+	@commands.command(pass_context=True)
+	async def unban(self, ctx, *members : discord.Member):
 		""" Unbans the mentioned people """
-		pass
+		for member in members:
+			await self.bot.unban(ctx.message.server, member)
 
 	@commands.command(pass_context=True)
 	async def mute(self, ctx, time, *members: discord.Member):
 		""" Mutes the mentioned people (temp mute optional) """
-		pass
+		try:
+			time = int(time)
+			await self.bot.say('{} muted for {} mins.'.format(', '.join([m.name for m in members]), time))
+		except ValueError:
+			converter = commands.MemberConverter(ctx, time) #time != int, thus it MUST be a member
+			members = list(members)
+			members.insert(0, converter, convert())
+			await self.bot.say('{} muted indefinitely.'.format(', '.join([m.name for m in members])))
 
 	@commands.command()
 	async def unmute(self, *members : discord.Member):
