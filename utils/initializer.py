@@ -15,7 +15,7 @@ def get_credentials():
 	YouTube = namedtuple('Youtube', ['key', 'id', 'secret'])
 
 	##Step 2: Create instances of the named tuples - 3) CREATE NEW INSTANCE OF NAMED TUPLE
-	credentials = get_json() ##reads the json file
+	credentials = get_json() #reads the json file
 	imgur = Imgur(credentials['imgur']['id'], credentials['imgur']['secret'])
 	reddit = Reddit(credentials['reddit']['id'], credentials['reddit']['secret']) 
 	youtube = YouTube(credentials['youtube']['key'], credentials['youtube']['id'], credentials['youtube']['secret'])

@@ -5,7 +5,6 @@ from utils import output
 class Administration():
 	def __init__(self, bot):
 		self.bot = bot
-
 	###
 	### BEGIN VOTE FUNCTIONS
 	###
@@ -66,10 +65,35 @@ class Administration():
 		if len(kicked) > 0:
 			await output.speak(self.bot, 'Kicked: {}'.format(", ".join(kicked)))
 
-	@commands.command()
-	async def ban(self, *args : str):
+	@commands.command(pass_context=True)
+	async def ban(self, ctx, *args : str):
 		""" Bans the mentioned people (temp ban optional) """
-		pass
+		mins = 0
+		if len(args) == 0:
+			raise commands.BadArgument('Missing required arguments!')
+
+		# if there are two or more args, and the first arg is an int
+		if len(args) > 1: 
+			try:
+				mins = int(args[0])
+				args = args[1:] # remove the time arg
+				if mins < 0:
+					raise commands.BadArgument('Y U DO THIS')
+			except ValueError:
+				pass
+
+		# construct the list of members to be deleted. ignore bad arguments. TODO: CHECK IF ALREADY IN LIST
+		del_list = []
+		for arg in args:
+			member = find_member(arg, ctx.message.server.members)
+			if member != None:
+				del_list.append(member)
+			else:
+				await self.bot.say('Member \'{}\' not found.'.format(arg))
+
+		# ban the members.
+		for member in del_list:
+			await self.bot.say('{} banned for {} minutes.'.format(member.name, mins))
 
 	@commands.command()
 	async def unban(self, *mentions : str):
@@ -95,5 +119,8 @@ class Administration():
 	async def undeafen(self, *mentions : str):
 		""" Undeafens the mentioned people"""
 		
+def find_member(mention, members):
+	return discord.utils.find(lambda m: m.mention == mention, members)
+
 def setup(bot):
 	bot.add_cog(Administration(bot))

@@ -3,6 +3,10 @@ from discord.ext import commands
 
 import wikipedia
 from imgurpython import ImgurClient
+#import gdata.youtube 			 --- BROKEN ----
+#import gdata.youtube.service
+
+#yt_service = gdata.youtube.service.YouTubeService()
 
 class Internet():
 	def __init__(self, bot):
