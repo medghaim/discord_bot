@@ -1,5 +1,7 @@
 import discord
 from discord.ext import commands
+from itertools import filterfalse
+
 from utils import output
 
 class Discord_Functionality():
@@ -53,29 +55,21 @@ class Discord_Functionality():
 				count += 1
 		await output.speak(self.bot, '{}/500 of the last channel messages are yours.'.format(count))
 
+
 	@commands.group(invoke_without_command=True, pass_context=True)
 	async def last(self, ctx, member : discord.Member, count=1):
-		""" Gets the specified users last X messages"""
-		if count > 100:
-			raise commands.BadArgument('Cannot display more than 100 messages.')
 		logs = self.bot.logs_from(ctx.message.channel, limit=500, before=ctx.message)
-		user_logs = []
-
+		msgs = []
 		async for log in logs:
-			if log.author == member and len(user_logs) < count:
-				user_logs.append(log)
-				
-			if len(user_logs) == count:
+			if log.author == member and count > 0:
+				msgs.insert(0,'({}) {}'.format(count, log.content))
+				count -= 1
+			if count == 0:
 				break
-		
-		log_str = ''
-		for log in reversed(user_logs):
-			log_str += '{}\n'.format(log.content)
 
-		if len(log_str) > 0:
-			await self.bot.say(log_str)
-		else:
-			await self.bot.say('No messages found.')
+		if len(msgs) == 0:
+			msgs.append('No messages found.')
+		await self.bot.say("\n".join(msgs))
 
 	@last.command(name='me', pass_context=True)
 	async def _me(self, ctx, count=1):
