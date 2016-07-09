@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from itertools import filterfalse
 
 from utils import output
 
@@ -34,16 +33,32 @@ class Discord_Functionality():
 
 	@commands.command(pass_context=True, aliases=['del'])
 	async def delete(self, ctx, count=1):
-		""" Deletes commanders last X messages. 
+		"""Deletes commanders last X messages. 
 		Only checks the channels last 500 messages"""
 		logs = self.bot.logs_from(ctx.message.channel, limit=500, before=ctx.message)
+		msgs = []
+
+		# find the messages
 		async for log in logs:
 			if log.author == ctx.message.author and count > 0:
-				await self.bot.delete_message(log)
+				#await self.bot.delete_message(log)
+				msgs.append(log)
 				count -= 1
 			if count == 0:
 				break
-		await self.bot.delete_message(ctx.message)
+
+		# delete the messages in chunks of 100
+		while len(msgs) > 100: # limit for client.delete_messages 
+			await self.bot.delete_messages(msgs[:100])
+			msgs = msgs[100:]
+
+		# clean up any remaing messages: 0 <= msgs <= 100 now
+		if len(msgs) > 1:
+			await self.bot.delete_messages(msgs)
+		elif len(msgs) == 1:
+			await self.bot.delete_message(msgs[0])
+
+		await self.bot.delete_message(ctx.message) # delete the command
 
 	@commands.command(pass_context=True)
 	async def msgcount(self, ctx):
@@ -54,7 +69,6 @@ class Discord_Functionality():
 			if log.author == ctx.message.author:
 				count += 1
 		await output.speak(self.bot, '{}/500 of the last channel messages are yours.'.format(count))
-
 
 	@commands.group(invoke_without_command=True, pass_context=True)
 	async def last(self, ctx, member : discord.Member, count=1):

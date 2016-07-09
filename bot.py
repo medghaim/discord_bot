@@ -11,11 +11,11 @@ from utils import initializer
 description = '''A multi-purpose written to do bot things by its lazy master.'''
 
 startup_extensions = [
-	"cogs.administration",
-	"cogs.discord_functionality",
-	"cogs.internet",
-	"cogs.utilities",
-	"cogs.fun"
+		"cogs.administration",
+		"cogs.discord_functionality",
+		"cogs.internet",
+		"cogs.utilities",
+		"cogs.fun"
 	]
 
 bot = commands.Bot(command_prefix='!', description=description)
@@ -28,8 +28,8 @@ async def on_ready():
 		print('\t'+s.name)
 	print('-------------------')
 
-@bot.event
-async def on_command_error(error, ctx):
+#@bot.event
+#async def on_command_error(error, ctx):
 	'''
 	if isinstance(error, commands.NoPrivateMessage):
 		await bot.send_message(ctx.message.author, 'This command cannot be used in private messages.')
@@ -42,8 +42,8 @@ async def on_command_error(error, ctx):
 	elif isinstance(error, commands.BadArgument):
 		await bot.send_message(ctx.message.channel, '{0.__class__.__name__}: {0}'.format(error))
 	'''
-	if isinstance(error, commands.CommandError):
-		await bot.send_message(ctx.message.channel, '```py\n{0.__class__.__name__}: {0}\n```'.format(error))
+	#if isinstance(error, commands.CommandError):
+		#await bot.send_message(ctx.message.channel, '```py\n{0.__class__.__name__}: {0}\n```'.format(error))
 
 
 #if __name__ == 'main': ##only cally if the script is executed, not imported.

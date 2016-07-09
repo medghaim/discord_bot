@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils import output
+from utils import admin_utils
 
 class Administration():
 	def __init__(self, bot):
@@ -70,20 +71,25 @@ class Administration():
 		""" Ban the mentioned members (temp ban optional) 
 		You can specify a time (in mins) before listing members, to specify how long to ban them for!"""
 		# Time is 'optional'- it will either be eval'd to a time, or a member (ie, no time specified).
-		try:
+		try: # time specified
 			time = int(time)
-			#await self.bot.say('{} banned for {} mins.'.format(', '.join([m.name for m in members]), time))
-		except ValueError:
+			await admin_utils.ban_dispenser(self.bot, ctx, time, members) # ban for `time` minutes
+		except ValueError: # no time specified
 			converter = commands.MemberConverter(ctx, time)
 			members = list(members)
-			members.insert(0, converter.convert())  # Let this raise to be consistent with the type hinting conversion
-			#await self.bot.say('{} banned indefinitely.'.format(', '.join([m.name for m in members])))
+			members.insert(0, converter.convert())  # let this raise to be consistent with the type hinting conversion
+			await admin_utils.ban_dispenser(self.bot, ctx, 0, members) # indefinite ban
 
 	@commands.command(pass_context=True)
-	async def unban(self, ctx, *members : discord.Member):
+	async def unban(self, ctx, *members : str):
 		""" Unbans the mentioned people """
-		for member in members:
-			await self.bot.unban(ctx.message.server, member)
+		bans = await self.bot.get_bans(ctx.message.server)
+		for member in members:	#for each member
+			try:
+				unban = [m for m in bans if m.name.lower() == member.lower()][0]
+				await self.bot.unban(ctx.message.server, unban)
+			except IndexError:
+				await self.bot.say('Member \'{}\' not found.'.format(member))
 
 	@commands.command(pass_context=True)
 	async def mute(self, ctx, time, *members: discord.Member):

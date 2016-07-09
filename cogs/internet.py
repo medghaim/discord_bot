@@ -40,8 +40,6 @@ class Internet():
 		elif num_links > 0:
 			await self.bot.say('parsing '+str(num_links)+' links')
 
-		
-
 	@commands.command(aliases=['sound', 'sc'])
 	async def soundcloud(self, search_str : str, num_links = 0):
 		"""Searches soundcloud for you!"""
