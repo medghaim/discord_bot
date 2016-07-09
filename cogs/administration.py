@@ -73,12 +73,13 @@ class Administration():
 		# Time is 'optional'- it will either be eval'd to a time, or a member (ie, no time specified).
 		try: # time specified
 			time = int(time)
-			await admin_utils.ban_dispenser(self.bot, ctx, time, members) # ban for `time` minutes
 		except ValueError: # no time specified
 			converter = commands.MemberConverter(ctx, time)
 			members = list(members)
 			members.insert(0, converter.convert())  # let this raise to be consistent with the type hinting conversion
-			await admin_utils.ban_dispenser(self.bot, ctx, 0, members) # indefinite ban
+			time = 0
+		finally:
+			await admin_utils.ban_dispenser(self.bot, ctx, time, members)
 
 	@commands.command(pass_context=True)
 	async def unban(self, ctx, *members : str):

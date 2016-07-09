@@ -49,6 +49,5 @@ async def on_ready():
 #if __name__ == 'main': ##only cally if the script is executed, not imported.
 bot.credentials = initializer.get_credentials()
 initializer.init_modules(bot, startup_extensions) #initialize all modules
-
 #Runs and starts the bot
 bot.run(bot.credentials.token)
