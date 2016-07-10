@@ -1,6 +1,7 @@
 import asyncio
 import discord
 from discord.ext import commands
+from utils import output
 
 async def ban_dispenser(bot, ctx, time, members):
 	if time == 0:	# INDEFINITE BAN
@@ -28,5 +29,28 @@ async def ban_dispenser(bot, ctx, time, members):
 			await bot.unban(ctx.message.server, member)
 			await bot.say('{}\'s ban has been lifted.'.format(member.name))
 
-async def mute_dispenser(bot, ctx, time, members):
-	pass
+async def ban_hammer(bot, ctx, time, members):
+	for member in members:
+		await bot.ban(member)
+
+	if time > 0: # temp ban
+		await asyncio.sleep(time*60)
+
+		for member in members:
+			await bot.unban(member)
+
+async def voice_state_changer(bot, ctx, time, members, mute, deafen):
+	names = ", ".join([m.name for m in members])
+	for member in members:
+		await bot.server_voice_state(member, mute=mute, deafen=deafen)
+
+	if time > 0: #TypeError str() > int() when !mute UNRECOGNIZED RECOGNIZED RECOGNIZED... why
+		await output.speak(bot, 'Temporarily muted ({} mins):\n\t {}'.format(time, names))
+		await asyncio.sleep(time*60)
+
+		for member in members:
+			await bot.server_voice_state(member, mute=False, deafen=False)
+
+		await output.speak(bot, 'Mutes lifted:\n\t {}'.format(names))
+	else:
+		await output.speak(bot, 'Indefinitely muted:\n\t {}'.format(names))

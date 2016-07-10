@@ -107,13 +107,13 @@ class Administration():
 		finally:
 			if len(members) == 0:
 				raise commands.MissingRequiredArgument('Must specify member(s) to mute.')
-			await admin_utils.mute_dispenser(self.bot, ctx, time, members)
+			await admin_utils.voice_state_changer(self.bot, ctx, time, members, True, False)
 
 	@commands.command()
 	async def unmute(self, *members : discord.Member):
 		""" Unmutes the mentioned people """
 		for member in members:
-			pass
+			await self.bot.server_voice_state(member, mute=False)
 
 	@commands.command(pass_context=True)
 	async def deafen(self, ctx, time, *members: discord.Member):
@@ -123,9 +123,6 @@ class Administration():
 	@commands.command()
 	async def undeafen(self, *members : discord.Member):
 		""" Undeafens the mentioned people"""
-		
-def find_member(mention, members):
-	return discord.utils.find(lambda m: m.mention == mention, members)
 
 def setup(bot):
 	bot.add_cog(Administration(bot))
