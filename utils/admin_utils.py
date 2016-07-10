@@ -47,7 +47,7 @@ async def voice_state_changer(bot, ctx, time, members, mute, deafen):
 	if time == 0:
 		await output.speak(bot, 'Indefinitely muted:\n\t {}'.format(names))
 
-	elif time > 0: #TypeError str() > int() when !mute UNRECOGNIZED RECOGNIZED RECOGNIZED... why
+	elif time > 0:
 		await output.speak(bot, 'Temporarily muted ({} mins):\n\t {}'.format(time, names))
 		await asyncio.sleep(time*60)
 
