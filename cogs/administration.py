@@ -78,10 +78,10 @@ class Administration():
 			members = list(members)
 			members.insert(0, converter.convert())  # let this raise to be consistent with the type hinting conversion
 			time = 0
-		finally:
-			if len(members) == 0:
-				raise commands.MissingRequiredArgument('Must specify member(s) to ban.')
-			await admin_utils.ban_dispenser(self.bot, ctx, time, members)
+			
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to ban.')
+		await admin_utils.ban_dispenser(self.bot, ctx, time, members)
 
 	@commands.command(pass_context=True)
 	async def unban(self, ctx, *members : str):
@@ -104,10 +104,10 @@ class Administration():
 			members = list(members)
 			members.insert(0, converter.convert())
 			time = 0
-		finally:
-			if len(members) == 0:
-				raise commands.MissingRequiredArgument('Must specify member(s) to mute.')
-			await admin_utils.voice_state_changer(self.bot, ctx, time, members, True, False)
+		
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to mute.')
+		await admin_utils.voice_state_changer(self.bot, ctx, time, members, True, False)
 
 	@commands.command()
 	async def unmute(self, *members : discord.Member):

@@ -28,8 +28,8 @@ async def on_ready():
 		print('\t'+s.name)
 	print('-------------------')
 
-#@bot.event
-#async def on_command_error(error, ctx):
+@bot.event
+async def on_command_error(error, ctx):
 	'''
 	if isinstance(error, commands.NoPrivateMessage):
 		await bot.send_message(ctx.message.author, 'This command cannot be used in private messages.')
@@ -42,9 +42,8 @@ async def on_ready():
 	elif isinstance(error, commands.BadArgument):
 		await bot.send_message(ctx.message.channel, '{0.__class__.__name__}: {0}'.format(error))
 	'''
-	#if isinstance(error, commands.CommandError):
-		#await bot.send_message(ctx.message.channel, '```py\n{0.__class__.__name__}: {0}\n```'.format(error))
-
+	if isinstance(error, commands.CommandError):
+		await bot.send_message(ctx.message.channel, '```py\n{0.__class__.__name__}: {0}\n```'.format(error))
 
 #if __name__ == 'main': ##only cally if the script is executed, not imported.
 bot.credentials = initializer.get_credentials()
