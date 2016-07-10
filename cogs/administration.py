@@ -102,7 +102,7 @@ class Administration():
 		except ValueError:
 			converter = commands.MemberConverter(ctx, time) #time != int, thus it MUST be a member
 			members = list(members)
-			members.insert(0, converter, convert())
+			members.insert(0, converter.convert())
 			time = 0
 		finally:
 			if len(members) == 0:
