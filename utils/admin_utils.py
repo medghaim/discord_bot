@@ -44,7 +44,10 @@ async def voice_state_changer(bot, ctx, time, members, mute, deafen):
 	for member in members:
 		await bot.server_voice_state(member, mute=mute, deafen=deafen)
 
-	if time > 0: #TypeError str() > int() when !mute UNRECOGNIZED RECOGNIZED RECOGNIZED... why
+	if time == 0:
+		await output.speak(bot, 'Indefinitely muted:\n\t {}'.format(names))
+
+	elif time > 0: #TypeError str() > int() when !mute UNRECOGNIZED RECOGNIZED RECOGNIZED... why
 		await output.speak(bot, 'Temporarily muted ({} mins):\n\t {}'.format(time, names))
 		await asyncio.sleep(time*60)
 
@@ -52,5 +55,3 @@ async def voice_state_changer(bot, ctx, time, members, mute, deafen):
 			await bot.server_voice_state(member, mute=False, deafen=False)
 
 		await output.speak(bot, 'Mutes lifted:\n\t {}'.format(names))
-	else:
-		await output.speak(bot, 'Indefinitely muted:\n\t {}'.format(names))
