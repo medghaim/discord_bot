@@ -79,6 +79,8 @@ class Administration():
 			members.insert(0, converter.convert())  # let this raise to be consistent with the type hinting conversion
 			time = 0
 		finally:
+			if len(members) == 0:
+				raise commands.MissingRequiredArgument('Must specify member(s) to ban.')
 			await admin_utils.ban_dispenser(self.bot, ctx, time, members)
 
 	@commands.command(pass_context=True)
@@ -87,7 +89,7 @@ class Administration():
 		bans = await self.bot.get_bans(ctx.message.server)
 		for member in members:	#for each member
 			try:
-				unban = [m for m in bans if m.name.lower() == member.lower()][0]
+				unban = [m for m in bans if m.name.lower() == member.lower()][0] # match the FIRST member in bans
 				await self.bot.unban(ctx.message.server, unban)
 			except IndexError:
 				await self.bot.say('Member \'{}\' not found.'.format(member))
@@ -97,17 +99,21 @@ class Administration():
 		""" Mutes the mentioned people (temp mute optional) """
 		try:
 			time = int(time)
-			await self.bot.say('{} muted for {} mins.'.format(', '.join([m.name for m in members]), time))
 		except ValueError:
 			converter = commands.MemberConverter(ctx, time) #time != int, thus it MUST be a member
 			members = list(members)
 			members.insert(0, converter, convert())
-			await self.bot.say('{} muted indefinitely.'.format(', '.join([m.name for m in members])))
+			time = 0
+		finally:
+			if len(members) == 0:
+				raise commands.MissingRequiredArgument('Must specify member(s) to mute.')
+			await admin_utils.mute_dispenser(self.bot, ctx, time, members)
 
 	@commands.command()
 	async def unmute(self, *members : discord.Member):
 		""" Unmutes the mentioned people """
-		pass
+		for member in members:
+			pass
 
 	@commands.command(pass_context=True)
 	async def deafen(self, ctx, time, *members: discord.Member):

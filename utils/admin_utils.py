@@ -25,3 +25,6 @@ async def ban_dispenser(bot, ctx, time, members):
 		for member in members:	
 			await bot.unban(ctx.message.server, member)
 			await bot.say('{}\'s ban has been lifted.'.format(member.name))
+
+async def mute_dispenser(bot, ctx, time, members):
+	pass
