@@ -8,7 +8,7 @@ async def ban_dispenser(bot, ctx, time, members):
 		for member in members:
 			await bot.send_message(member, 'You have been indefinitely banned from the server. _Jah praise_.')
 			await bot.ban(member)
-		await bot.say('Indefinitely Banned: \n\t{}'.format(", ".join(m.name for m in members)))
+		await output.speak('Indefinitely Banned: \n\t{}'.format(", ".join(m.name for m in members)))
 
 	else:			# TEMP BAN
 		banstr = ''
@@ -21,13 +21,13 @@ async def ban_dispenser(bot, ctx, time, members):
 			await bot.ban(member)
 
 		# wait out the duration of the ban
-		await bot.say('Banned for {} mins:\n{}'.format(time, banstr))
+		await output.speak('Banned for {} mins:\n{}'.format(time, banstr))
 		await asyncio.sleep(time*60) # `time` minutes
 		
 		# unban all the members
 		for member in members:	
 			await bot.unban(ctx.message.server, member)
-			await bot.say('{}\'s ban has been lifted.'.format(member.name))
+			await output.speak('{}\'s ban has been lifted.'.format(member.name))
 
 async def ban_hammer(bot, ctx, time, members):
 	for member in members:

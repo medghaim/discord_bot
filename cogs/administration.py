@@ -86,6 +86,9 @@ class Administration():
 	@commands.command(pass_context=True)
 	async def unban(self, ctx, *members : str):
 		""" Unbans the mentioned people """
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to unban.')
+
 		bans = await self.bot.get_bans(ctx.message.server)
 		for member in members:	#for each member
 			try:
@@ -112,6 +115,9 @@ class Administration():
 	@commands.command()
 	async def unmute(self, *members : discord.Member):
 		""" Unmutes the mentioned people """
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to unmute.')
+
 		for member in members:
 			await self.bot.server_voice_state(member, mute=False)
 			# await admin_utils.voice_state_changer(self.bot, ctx, 0, False, False)
