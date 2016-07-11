@@ -107,7 +107,7 @@ class Administration():
 		
 		if len(members) == 0:
 			raise commands.MissingRequiredArgument('Must specify member(s) to mute.')
-		await admin_utils.voice_state_changer(self.bot, ctx, time, members, True, False)
+		await admin_utils.voice_state_changer(self.bot, ctx, time, members, mute=True, deafen=False)
 
 	@commands.command()
 	async def unmute(self, *members : discord.Member):
@@ -129,7 +129,7 @@ class Administration():
 
 		if len(members) == 0:
 			raise commands.MissingRequiredArgument('Must specify member(s) to deafen.')
-		await admin_utils.voice_state_changer(self.bot, ctx, time, members, False, True)
+		await admin_utils.voice_state_changer(self.bot, ctx, time, members, deafen=True, mute=False)
 
 	@commands.command()
 	async def undeafen(self, *members : discord.Member):

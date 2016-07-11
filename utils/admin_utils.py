@@ -39,7 +39,7 @@ async def ban_hammer(bot, ctx, time, members):
 		for member in members:
 			await bot.unban(member)
 
-async def voice_state_changer(bot, ctx, time, members, mute, deafen):
+async def voice_state_changer(bot, ctx, time, members, *, mute=False, deafen=False):
 	names = ", ".join([m.name for m in members])
 	for member in members:
 		await bot.server_voice_state(member, mute=mute, deafen=deafen)
@@ -55,3 +55,6 @@ async def voice_state_changer(bot, ctx, time, members, mute, deafen):
 			await bot.server_voice_state(member, mute=False, deafen=False)
 
 		await output.speak(bot, 'Mutes lifted:\n\t {}'.format(names))
+
+async def permission_changer(bot, ctx, time, members):
+	pass
