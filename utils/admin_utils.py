@@ -45,7 +45,7 @@ async def voice_state_changer(bot, ctx, time, members, mute, deafen):
 		await bot.server_voice_state(member, mute=mute, deafen=deafen)
 
 	if time == 0:
-		await output.speak(bot, 'Indefinitely muted:\n\t {}'.format(names))
+		await output.speak(bot, 'Muted:\n\t {}'.format(names))
 
 	elif time > 0:
 		await output.speak(bot, 'Temporarily muted ({} mins):\n\t {}'.format(time, names))

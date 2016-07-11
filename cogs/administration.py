@@ -114,15 +114,50 @@ class Administration():
 		""" Unmutes the mentioned people """
 		for member in members:
 			await self.bot.server_voice_state(member, mute=False)
+			# await admin_utils.voice_state_changer(self.bot, ctx, 0, False, False)
 
 	@commands.command(pass_context=True)
 	async def deafen(self, ctx, time, *members: discord.Member):
 		""" Deafens the mentioned people (temp deafen optional) """
-		pass
+		try:
+			time = int(time)
+		except ValueError:
+			converter = commands.MemberConverter(ctx, time)
+			members = list(members)
+			members.insert(0, converter.convert())
+			time = 0
+
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to deafen.')
+		await admin_utils.voice_state_changer(self.bot, ctx, time, members, False, True)
 
 	@commands.command()
 	async def undeafen(self, *members : discord.Member):
 		""" Undeafens the mentioned people"""
+		for member in members:
+			await self.bot.server_voice_state(member, deafen=False)
+
+	@commands.command(pass_context=True, aliases=['chmute', 'cmute'])
+	async def chatmute(self, ctx, time, *members : discord.Member):
+		""" Removes the messaging privilege of the specified members.
+		Time optional for temp chat mute """
+		try:
+			time = int(time)
+		except ValueError:
+			converter = commands.MemberConverter(ctx, time)
+			members = list(members)
+			members.insert(0, converter.convert())
+			time = 0
+
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to chat-mute.')
+		#CHAT MUTE HERE
+
+	@commands.command(aliases=['chunmute', 'cunmute', 'chun', 'cun'])
+	async def chatunmute(self, *members : discord.Member):
+		""" Restors the messaging privilege of the specified members. """
+		for member in members:
+			pass
 
 def setup(bot):
 	bot.add_cog(Administration(bot))
