@@ -54,17 +54,17 @@ class Administration():
 	###
 
 	@commands.command()
-	async def kick(self, *mentions : discord.Member):
+	async def kick(self, *members : discord.Member):
 		""" Kicks the mentioned people """
-		#CHECK PERMISSIONS 
-		#RAISE EXCEPTIONS IF NECESSARY
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to kick.')
+
 		kicked = []
-		for member in mentions:
+		for member in members:
 			await self.bot.kick(member)
 			kicked.append(member.name)
 			
-		if len(kicked) > 0:
-			await output.speak(self.bot, 'Kicked: {}'.format(", ".join(kicked)))
+		await output.speak(self.bot, 'Kicked: {}'.format(", ".join(kicked)))
 
 	@commands.command(pass_context=True)
 	async def ban(self, ctx, time, *members: discord.Member):
@@ -140,6 +140,9 @@ class Administration():
 	@commands.command()
 	async def undeafen(self, *members : discord.Member):
 		""" Undeafens the mentioned people"""
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to undeafen.')
+
 		for member in members:
 			await self.bot.server_voice_state(member, deafen=False)
 
@@ -162,6 +165,9 @@ class Administration():
 	@commands.command(aliases=['chunmute', 'cunmute', 'chun', 'cun'])
 	async def chatunmute(self, *members : discord.Member):
 		""" Restors the messaging privilege of the specified members. """
+		if len(members) == 0:
+			raise commands.MissingRequiredArgument('Must specify member(s) to chat-unmute.')
+
 		for member in members:
 			pass
 
