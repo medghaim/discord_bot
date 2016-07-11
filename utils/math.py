@@ -11,7 +11,7 @@ import operator as op
 
 # supported operators
 operators = {ast.Add: op.add, ast.Sub: op.sub, ast.Mult: op.mul,
-             ast.Div: op.truediv, ast.Pow: op.pow, ast.BitXor: op.xor,
+             ast.Div: op.truediv, ast.BitXor: op.pow, # ^ = exponent, not XOR in this bot
              ast.USub: op.neg}
 
 def eval_expr(expr):
