@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from utils import output
+#from utils import admin_utils
+
 from utils import admin_utils
 
 class Administration():
@@ -64,28 +65,18 @@ class Administration():
 			await self.bot.kick(member)
 			kicked.append(member.name)
 			
-		await output.speak(self.bot, 'Kicked: {}'.format(", ".join(kicked)))
+		await self.bot.say_block('Kicked: {}'.format(", ".join(kicked)))
 
 	@commands.command(pass_context=True)
 	async def ban(self, ctx, time, *members: discord.Member):
 		""" Ban the mentioned members (temp ban optional) 
 		You can specify a time (in mins) before listing members, to specify how long to ban them for!"""
 		# Time is 'optional'- it will either be eval'd to a time, or a member (ie, no time specified).
-		try: # time specified
-			time = int(time)
-		except ValueError: # no time specified
-			converter = commands.MemberConverter(ctx, time)
-			members = list(members)
-			members.insert(0, converter.convert())  # let this raise to be consistent with the type hinting conversion
-			time = 0
-			
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to ban.')
-		await admin_utils.ban_dispenser(self.bot, ctx, time, members)
+		await admin_utils.administrate('ban', self, ctx, time, members)
 
 	@commands.command(pass_context=True)
 	async def unban(self, ctx, *members : str):
-		""" Unbans the mentioned people """
+		""" Unbans the mentioned people 
 		if len(members) == 0:
 			raise commands.MissingRequiredArgument('Must specify member(s) to unban.')
 
@@ -96,80 +87,40 @@ class Administration():
 				await self.bot.unban(ctx.message.server, unban)
 			except IndexError:
 				await self.bot.say('Member \'{}\' not found.'.format(member))
+		"""
+		await admin_utils.deadministrate(members, 'unban')
 
 	@commands.command(pass_context=True)
 	async def mute(self, ctx, time, *members: discord.Member):
 		""" Mutes the mentioned people (temp mute optional) """
-		try:
-			time = int(time)
-		except ValueError:
-			converter = commands.MemberConverter(ctx, time) #time != int, thus it MUST be a member
-			members = list(members)
-			members.insert(0, converter.convert())
-			time = 0
-		
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to mute.')
-		await admin_utils.voice_state_changer(self.bot, ctx, time, members, mute=True, deafen=False)
+		await admin_utils.administrate('mute', self, ctx, time, members, mute=True)
 
 	@commands.command()
 	async def unmute(self, *members : discord.Member):
 		""" Unmutes the mentioned people """
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to unmute.')
-
-		for member in members:
-			await self.bot.server_voice_state(member, mute=False)
-			# await admin_utils.voice_state_changer(self.bot, ctx, 0, False, False)
+		await admin_utils.deadministrate('unmute', self, members)
 
 	@commands.command(pass_context=True)
 	async def deafen(self, ctx, time, *members: discord.Member):
 		""" Deafens the mentioned people (temp deafen optional) """
-		try:
-			time = int(time)
-		except ValueError:
-			converter = commands.MemberConverter(ctx, time)
-			members = list(members)
-			members.insert(0, converter.convert())
-			time = 0
-
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to deafen.')
-		await admin_utils.voice_state_changer(self.bot, ctx, time, members, deafen=True, mute=False)
+		await admin_utils.administrate('deafen', self, ctx, time, members, deafen=True)
 
 	@commands.command()
 	async def undeafen(self, *members : discord.Member):
 		""" Undeafens the mentioned people"""
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to undeafen.')
-
-		for member in members:
-			await self.bot.server_voice_state(member, deafen=False)
+		await admin_utils.deadministrate('undeafen', self, members)
 
 	@commands.command(pass_context=True, aliases=['chmute', 'cmute'])
 	async def chatmute(self, ctx, time, *members : discord.Member):
 		""" Removes the messaging privilege of the specified members.
 		Time optional for temp chat mute """
-		try:
-			time = int(time)
-		except ValueError:
-			converter = commands.MemberConverter(ctx, time)
-			members = list(members)
-			members.insert(0, converter.convert())
-			time = 0
-
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to chat-mute.')
-		#CHAT MUTE HERE
+		await admin_utils.administrate('chatmute', self, ctx, time, members)
 
 	@commands.command(aliases=['chunmute', 'cunmute', 'chun', 'cun'])
 	async def chatunmute(self, *members : discord.Member):
 		""" Restors the messaging privilege of the specified members. """
-		if len(members) == 0:
-			raise commands.MissingRequiredArgument('Must specify member(s) to chat-unmute.')
-
-		for member in members:
-			pass
+		admin_utils.deadministrate('chatunmute', self, members)
 
 def setup(bot):
 	bot.add_cog(Administration(bot))
+
