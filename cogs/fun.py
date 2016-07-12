@@ -1,5 +1,4 @@
 from discord.ext import commands
-from utils import output
 
 class Fun():
 	def __init__(self, bot):
@@ -8,7 +7,7 @@ class Fun():
 	@commands.group(invoke_without_command=True)
 	async def mlg(self, name : str):
 		""" Gamertag of the best of the best """
-		await output.speak(self.bot, 'xXx_69_{}_69_xXx420360noscopeblazeit'.format(name))
+		await self.bot.say_block('xXx_69_{}_69_xXx420360noscopeblazeit'.format(name))
 
 	@mlg.command(name='me', pass_context=True)
 	async def _me(self, ctx):

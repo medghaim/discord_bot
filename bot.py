@@ -19,7 +19,12 @@ startup_extensions = [
 		"cogs.fun"
 	]
 
-bot = commands.Bot(command_prefix='!', description=description)
+class ExtendedBot(commands.Bot):
+	""" Extended bot class to provide extra functionality """
+	def say_block(self, msg, **kwargs):
+		return self.say('```py\n{}\n```'.format(msg), **kwargs)
+
+bot = ExtendedBot(command_prefix='!', description=description)
 
 @bot.event
 async def on_ready():
@@ -29,8 +34,8 @@ async def on_ready():
 		print('\t'+s.name)
 	print('-------------------')
 
-@bot.event
-async def on_command_error(error, ctx):
+#@bot.event
+#async def on_command_error(error, ctx):
 	'''
 	if isinstance(error, commands.NoPrivateMessage):
 		await bot.send_message(ctx.message.author, 'This command cannot be used in private messages.')
@@ -42,15 +47,16 @@ async def on_command_error(error, ctx):
 		print('{0.__class__.__name__}: {0}'.format(error.original), file=sys.stderr)
 	elif isinstance(error, commands.BadArgument):
 		await bot.send_message(ctx.message.channel, '{0.__class__.__name__}: {0}'.format(error))
-	'''
+	
 	if isinstance(error, commands.CommandInvokeError):
 		match = re.search('(?!.*:).*', str(error))
 		await bot.send_message(ctx.message.channel, '```py\nCOMANDINVOKEERROR - {}\n```'.format(match.group(0)))
 	elif isinstance(error, commands.CommandError):
 		await bot.send_message(ctx.message.channel, '```py\n{}\n```'.format(error))
-
+	'''
 #if __name__ == 'main': ##only cally if the script is executed, not imported.
 bot.credentials = initializer.get_credentials()
 initializer.init_modules(bot, startup_extensions) #initialize all modules
+
 #Runs and starts the bot
 bot.run(bot.credentials.token)

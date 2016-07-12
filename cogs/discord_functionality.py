@@ -1,8 +1,6 @@
 import discord
 from discord.ext import commands
 
-from utils import output
-
 class Discord_Functionality():
 
 	def __init__(self, bot):
@@ -19,7 +17,7 @@ class Discord_Functionality():
 		banned = "\n".join(usr.name for usr in (await self.bot.get_bans(ctx.message.server)))
 		if len(banned) == 0:
 			banned = 'No current bans.'
-		await output.speak(self.bot, banned)
+		await self.bot.say_block(banned)
 
 	@commands.command(pass_context=True, aliases=['whom'])
 	async def who(self, ctx, *members : discord.Member):
@@ -29,7 +27,7 @@ class Discord_Functionality():
 		status = "\n".join('{0.name} ({0.game.name})'.format(m) for m in members if m.voice_channel and m.game)
 		if len(status) == 0:
 			status = 'No one currently playing.'
-		await output.speak(self.bot, status)
+		await self.bot.say_block(status)
 
 	@commands.command(pass_context=True, aliases=['del'])
 	async def delete(self, ctx, count=1):
@@ -68,7 +66,7 @@ class Discord_Functionality():
 		async for log in logs:
 			if log.author == ctx.message.author:
 				count += 1
-		await output.speak(self.bot, '{}/500 of the last channel messages are yours.'.format(count))
+		await self.bot.say_block('{}/500 of the last channel messages are yours.'.format(count))
 
 	@commands.group(invoke_without_command=True, pass_context=True)
 	async def last(self, ctx, member : discord.Member, count=1):
