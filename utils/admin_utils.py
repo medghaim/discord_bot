@@ -25,7 +25,7 @@ async def ban(bot, ctx, members, time):
 
 async def unban(bot, ctx, members):
 	bans = await bot.get_bans(ctx.message.server)
-	unbanned = 'Unbanned:\n\t'
+	output = 'Unbanned:\n\t'
 	for member in members:
 		if isinstance(member, str): # member is str, unban was called from admin_undo, thus we must find member from bans list
 			candidates = [m for m in bans if m.name.lower() == member.lower()]
@@ -35,8 +35,8 @@ async def unban(bot, ctx, members):
 				raise commands.BadArgument('"{}" refers to more than one person. Please ban manually.'.format(member))
 			member = candidates[0] # len(candidates) == 1
 		await bot.unban(ctx.message.server, member)
-		unbanned += '{}\n\t'.format(member.name)
-	await bot.say_block(unbanned.strip())
+		output += '{}\n\t'.format(member.name)
+	await bot.say_block(output.strip())
 
 async def disable_voice_state(bot, ctx, members, time, **kwargs):
 	is_mute = kwargs.get('mute', False)
