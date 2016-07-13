@@ -91,7 +91,6 @@ async def admin_do(func_key, bot, ctx, members, time, **kwargs):
 
 	Allows us to check for option time arg, which is common procedure for ban/mute/deafen
 	"""
-
 	# parsing arguments, determining if time was supplied argument or not
 	try:
 		time = int(time)
@@ -116,4 +115,4 @@ async def admin_undo(func_key, bot, ctx, members, **kwargs):
 		raise commands.MissingRequiredArgument('Must specifiy member(s) to {}.'.format(func_key))
 
 	for member in members:
-		await undo_dispatcher[func_key](bot, ctx, member, **kwargs)
+		await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
