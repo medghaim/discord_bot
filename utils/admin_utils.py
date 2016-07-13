@@ -125,5 +125,4 @@ async def admin_undo(func_key, bot, ctx, members, **kwargs):
 	if len(members) == 0:
 		raise commands.MissingRequiredArgument('Must specifiy member(s) to {}.'.format(func_key))
 
-	for member in members:
-		await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
+	await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
