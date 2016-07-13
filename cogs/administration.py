@@ -82,7 +82,6 @@ class Administration():
 	@commands.command(pass_context=True)
 	async def mute(self, ctx, time, *members: discord.Member):
 		""" Mutes the mentioned people (temp mute optional) """
-		#await admin_utils.administrate('mute', self.bot, ctx, time, members, mute=True)
 		await admin_utils.admin_do('mute', self.bot, ctx, members, time, mute=True) #True, we're DOING mute
 
 	@commands.command(pass_context=True)
