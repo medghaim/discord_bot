@@ -54,10 +54,21 @@ async def disable_voice_state(bot, ctx, members, time, **kwargs):
 	await bot.say_block(output.strip())
 
 async def enable_voice_state(bot, ctx, members, **kwargs):
+	""" If kwargs has mute=True, that means we should UNMUTE it (if deafen=True, UNDEAFEN). 
+	This is designed so that enable_voice_state can be called from admin_do as well.
+	eg, in a temp mute, admin_do calls disable_voice_state with kwargs = {mute:True}. When the time is up,
+	these same kwargs get passed to undo_dispatcher, which calls enable_voice_state with
+	the same initial kwargs ({mute:True}).
+	Therefore	- admin_do MUST be called with ONLY 1 kwarg (mute or deafen) 
+				- that kwarg must be true to indicate it's what we want to alter the state of.
+					- admin_do / admin_undo resolves _how_ we want to alter state
+						- admin_do = mute
+						- admin_undo = unmute
+	"""
 	is_deaf = kwargs.get('deafen', False)
 
 	output = 'Unmuted:\n\t'
-	t_kwargs = {'mute' : False}
+	t_kwargs = {'mute' : False} #constructing new kwargs
 	if is_deaf:
 		output = 'Undeafened:\n\t'
 		t_kwargs = {'deafen' : False}
