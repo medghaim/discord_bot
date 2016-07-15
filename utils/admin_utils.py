@@ -18,7 +18,6 @@ def voice_kwarg_converter(**kwargs):
 		t_kwargs[key] = value # add to new kwargs
 	return t_kwargs
 
-# "private" administrative utilities - don't call these directly, use admin_do, and admin_undo
 async def ban(bot, ctx, members, time):
 	inv = (await bot.create_invite(ctx.message.channel)).url
 	msg = 'You have been banned for {} mins.\n. You will be able to use the following invite when your ban is lifted.\n{}'.format(time, inv)
@@ -91,8 +90,7 @@ async def enable_voice_state(bot, ctx, members, **kwargs):
 	await bot.say_block(output.strip())
 
 
-
-# ADMINISTRATIVE FUNCTION DISPATCHERS (dict of value->function)
+# administrative function dispatchers - (dict of value->function)
 do_dispatcher = {
 	'ban' : ban,
 	'voice_state' : disable_voice_state, #mute/deafen/silence
@@ -105,16 +103,13 @@ undo_dispatcher = {
 	'chatmute' : None,
 }
 
-
-# "public" administrative utilities
-
-#Only functions that have the option of specifying time SHOULD call this
 async def admin_do(func_key, bot, ctx, members, time, **kwargs):
-	""" Parse arguments (check for optional int, convert to member as necessary)
-	and use the admin_dispatcher dict to call the appropriate administrative function 
-
+	""" NOTE: Only commands that can specify time (ban/mute/etc) should call this 
+	Parse arguments (check for optional int, convert to member as necessary)
+	and use the do_dispatcher dict to call the appropriate administrative function 
 	Allows us to check for option time arg, which is common procedure for ban/mute/deafen
 	"""
+	
 	# parsing arguments, determining if time was supplied argument or not
 	try:
 		time = int(time)
@@ -133,8 +128,9 @@ async def admin_do(func_key, bot, ctx, members, time, **kwargs):
 		await asyncio.sleep(time)#*60)
 		await undo_dispatcher[func_key](bot, ctx, members, **voice_kwarg_converter(**kwargs))
 
-#Only functions that DON'T have the option to specify a time SHOULD call this
+
 async def admin_undo(func_key, bot, ctx, members, **kwargs):
+	"""Only commands that DON'T have the option to specifiy time (ie, unban, unmute) should call this"""
 	if len(members) == 0:
 		raise commands.MissingRequiredArgument('Must specifiy member(s) to {}.'.format(func_key))
 	await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
