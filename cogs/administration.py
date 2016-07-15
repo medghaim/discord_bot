@@ -71,7 +71,6 @@ class Administration():
 	async def ban(self, ctx, time, *members: discord.Member):
 		""" Ban the mentioned members (temp ban optional) 
 		You can specify a time (in mins) before listing members, to specify how long to ban them for!"""
-		#await admin_utils.administrate('ban', self, ctx, time, members)
 		await admin_utils.admin_do('ban', self.bot, ctx, members, time)
 
 	@commands.command(pass_context=True)
@@ -82,22 +81,33 @@ class Administration():
 	@commands.command(pass_context=True)
 	async def mute(self, ctx, time, *members: discord.Member):
 		""" Mutes the mentioned people (temp mute optional) """
-		await admin_utils.admin_do('mute', self.bot, ctx, members, time, mute=True) #True, we're DOING mute
+		await admin_utils.admin_do('voice_state', self.bot, ctx, members, time, mute=True) 
 
 	@commands.command(pass_context=True)
 	async def unmute(self, ctx, *members : discord.Member):
 		""" Unmutes the mentioned people """
-		await admin_utils.admin_undo('mute', self.bot, ctx, members, mute=True) #True, we're UNDOING mute
+		await admin_utils.admin_undo('voice_state', self.bot, ctx, members, mute=False) 
 
 	@commands.command(pass_context=True, aliases=['deaf'])
 	async def deafen(self, ctx, time, *members: discord.Member):
 		""" Deafens the mentioned people (temp deafen optional) """
-		await admin_utils.admin_do('deafen', self.bot, ctx, members, time, deafen=True) #True, we're DOING deafen
+		await admin_utils.admin_do('voice_state', self.bot, ctx, members, time, deafen=True) 
 
 	@commands.command(pass_context=True, aliases=['undeaf'])
 	async def undeafen(self, ctx, *members : discord.Member):
 		""" Undeafens the mentioned people"""
-		await admin_utils.admin_undo('deafen', self.bot, ctx, members, deafen=True) #True, we're UNDOING deafen
+		await admin_utils.admin_undo('voice_state', self.bot, ctx, members, deafen=False)
+
+	@commands.command(pass_context=True, aliases=['sil'])
+	async def silence(self, ctx, time, *members: discord.Member):
+		""" Silences (mute+deafen) the mentioned people (temp silence optional) """
+		await admin_utils.admin_do('voice_state', self.bot, ctx, members, time, mute=True, deafen=True) 
+
+	@commands.command(pass_context=True, aliases=['unsil'])
+	async def unsilence(self, ctx, *members : discord.Member):
+		""" Unsilences the mentioned people"""
+		await admin_utils.admin_undo('voice_state', self.bot, ctx, members, mute=False, deafen=False)
+	
 
 	@commands.command(pass_context=True, aliases=['chmute', 'cmute'])
 	async def chatmute(self, ctx, time, *members : discord.Member):

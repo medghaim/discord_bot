@@ -8,7 +8,22 @@ from discord.ext import commands
 	ie, unban can be called by from admin_undo (ie, !unban x)
 	or it can be called in admin_do, after a temp ban (ie, !ban 5 x <-- will call unban)
 """
+# helpers
+def voice_kwarg_converter(**kwargs):
+	""" When a usr is temp muted, admin_do is called with kwargs={mute:True}.
+	This calls do_dispatcher (ie, bot.server_voice_status(member, **kwargs)) and mutes the member (since mute:True)
+	After temp mute lapses, admin_do ALSO calls undo_dispatcher w/ same kwargs. (ie, bot.server_voice_status(member, **kwargs))
+	Problem is, our **kwargs say that {mute:True} in this case. So we want to reverse ONLY the voice option kwargs
+	func def: bot.server_voice_state(member, *, mute=None, deafen=None) -- only kwarg options are 'mute' & 'deafen'
+	"""
+	t_kwargs = {}
+	for key, value in kwargs.items():
+		if key == 'mute' or key == 'deafen':
+			value = not value # flip the value
+		t_kwargs[key] = value # add to new kwargs
+	return t_kwargs
 
+# "private" administrative utilities - don't call these directly, use admin_do, and admin_undo
 async def ban(bot, ctx, members, time):
 	inv = (await bot.create_invite(ctx.message.channel)).url
 	msg = 'You have been banned for {} mins.\n. You will be able to use the following invite when your ban is lifted.\n{}'.format(time, inv)
@@ -39,9 +54,17 @@ async def unban(bot, ctx, members):
 	await bot.say_block(output.strip())
 
 async def disable_voice_state(bot, ctx, members, time, **kwargs):
-	is_mute = kwargs.get('mute', False)
-	verb = 'Muted'
-	if not is_mute:
+	"""Only True kwargs should be passed to this function
+		 - the things we want to DO (mute, deafen, silence, etc)
+	"""
+	is_mute = kwargs.get('mute', None)
+	is_deaf = kwargs.get('deafen', None)
+
+	if is_mute and is_deaf:
+		verb = 'Silenced'
+	elif is_mute:
+		verb = 'Muted'
+	elif is_deaf:
 		verb = 'Deafened'
 
 	output = '{}:\n\t'.format(verb)
@@ -53,47 +76,43 @@ async def disable_voice_state(bot, ctx, members, time, **kwargs):
 		output += '{}\n\t'.format(member.name)
 	await bot.say_block(output.strip())
 
-async def enable_voice_state(bot, ctx, members, **kwargs):
-	""" If kwargs has mute=True, that means we should UNMUTE it (if deafen=True, UNDEAFEN). 
-	This is designed so that enable_voice_state can be called from admin_do as well.
-	eg, in a temp mute, admin_do calls disable_voice_state with kwargs = {mute:True}. When the time is up,
-	these same kwargs get passed to undo_dispatcher, which calls enable_voice_state with
-	the same initial kwargs ({mute:True}).
-	Therefore	- admin_do MUST be called with ONLY 1 kwarg (mute or deafen) 
-				- that kwarg must be true to indicate it's what we want to alter the state of.
-					- admin_do / admin_undo resolves _how_ we want to alter state
-						- admin_do = mute
-						- admin_undo = unmute
-	"""
-	is_deaf = kwargs.get('deafen', False)
 
-	output = 'Unmuted:\n\t'
-	t_kwargs = {'mute' : False} #constructing new kwargs
-	if is_deaf:
+async def enable_voice_state(bot, ctx, members, **kwargs):
+	"""Only False kwargs should be passed to this function
+		 - the things we want to UNDO (unmute, undeafen, unsilence, etc)
+	"""
+	is_mute = kwargs.get('mute', True)
+	is_deaf = kwargs.get('deafen', True)
+
+	if not is_mute and not is_deaf:
+		output = 'Unsilenced:\n\t'
+	elif not is_mute:
+		output = 'Unmuted:\n\t'
+	elif not is_deaf:
 		output = 'Undeafened:\n\t'
-		t_kwargs = {'deafen' : False}
 
 	for member in members:
-		await bot.server_voice_state(member, **t_kwargs)
+		await bot.server_voice_state(member, **kwargs)
 		output += '{}\n\t'.format(member.name)
 	await bot.say_block(output.strip())
+
 
 
 # ADMINISTRATIVE FUNCTION DISPATCHERS (dict of value->function)
 do_dispatcher = {
 	'ban' : ban,
-	'mute' : disable_voice_state,
-	'deafen' : disable_voice_state,
+	'voice_state' : disable_voice_state, #mute/deafen/silence
 	'chatmute' : None,
 }
 
 undo_dispatcher = {
 	'ban' : unban,
-	'mute' : enable_voice_state,
-	'deafen' : enable_voice_state,
+	'voice_state' : enable_voice_state, #unmute/undeafen/unsilence
 	'chatmute' : None,
 }
 
+
+# "public" administrative utilities
 
 #Only functions that have the option of specifying time SHOULD call this
 async def admin_do(func_key, bot, ctx, members, time, **kwargs):
@@ -118,11 +137,10 @@ async def admin_do(func_key, bot, ctx, members, time, **kwargs):
 	await do_dispatcher[func_key](bot, ctx, members, time, **kwargs)
 	if time > 0: # temp ban
 		await asyncio.sleep(time)#*60)
-		await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
+		await undo_dispatcher[func_key](bot, ctx, members, **voice_kwarg_converter(**kwargs))
 
 #Only functions that DON'T have the option to specify a time SHOULD call this
 async def admin_undo(func_key, bot, ctx, members, **kwargs):
 	if len(members) == 0:
 		raise commands.MissingRequiredArgument('Must specifiy member(s) to {}.'.format(func_key))
-
 	await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
