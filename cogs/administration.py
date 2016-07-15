@@ -107,7 +107,6 @@ class Administration():
 	async def unsilence(self, ctx, *members : discord.Member):
 		""" Unsilences the mentioned people"""
 		await admin_utils.admin_undo('voice_state', self.bot, ctx, members, mute=False, deafen=False)
-	
 
 	@commands.command(pass_context=True, aliases=['chmute', 'cmute'])
 	async def chatmute(self, ctx, time, *members : discord.Member):
