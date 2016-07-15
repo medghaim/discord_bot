@@ -10,12 +10,7 @@ from discord.ext import commands
 """
 # helpers
 def voice_kwarg_converter(**kwargs):
-	""" When a usr is temp muted, admin_do is called with kwargs={mute:True}.
-	This calls do_dispatcher (ie, bot.server_voice_status(member, **kwargs)) and mutes the member (since mute:True)
-	After temp mute lapses, admin_do ALSO calls undo_dispatcher w/ same kwargs. (ie, bot.server_voice_status(member, **kwargs))
-	Problem is, our **kwargs say that {mute:True} in this case. So we want to reverse ONLY the voice option kwargs
-	func def: bot.server_voice_state(member, *, mute=None, deafen=None) -- only kwarg options are 'mute' & 'deafen'
-	"""
+	""" Turns true kwargs (if key == 'mute' or 'deafen') false."""
 	t_kwargs = {}
 	for key, value in kwargs.items():
 		if (key == 'mute' or key == 'deafen') and value == True:
@@ -28,6 +23,7 @@ async def ban(bot, ctx, members, time):
 	inv = (await bot.create_invite(ctx.message.channel)).url
 	msg = 'You have been banned for {} mins.\n. You will be able to use the following invite when your ban is lifted.\n{}'.format(time, inv)
 	output = 'Temporarily banned ({} mins):\n\t'.format(time)
+
 	if time == 0:
 		msg = 'You have been indefinitely banned from {}. _Jah praise_'.format(ctx.message.server)
 		output = 'Banned:\n\t'
@@ -36,11 +32,13 @@ async def ban(bot, ctx, members, time):
 		await bot.send_message(member, msg)
 		output += '{}\n\t'.format(member.name)
 		await bot.ban(member)
+
 	await bot.say_block(output.strip())
 
 async def unban(bot, ctx, members):
 	bans = await bot.get_bans(ctx.message.server)
 	output = 'Unbanned:\n\t'
+
 	for member in members:
 		if isinstance(member, str): # member is str, unban was called from admin_undo, thus we must find member from bans list
 			candidates = [m for m in bans if m.name.lower() == member.lower()]
@@ -49,8 +47,10 @@ async def unban(bot, ctx, members):
 			elif len(candidates) > 1:
 				raise commands.BadArgument('"{}" refers to more than one person. Please ban manually.'.format(member))
 			member = candidates[0] # len(candidates) == 1
+
 		await bot.unban(ctx.message.server, member)
 		output += '{}\n\t'.format(member.name)
+
 	await bot.say_block(output.strip())
 
 async def disable_voice_state(bot, ctx, members, time, **kwargs):
