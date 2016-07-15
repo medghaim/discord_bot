@@ -2,12 +2,6 @@ import asyncio
 import discord
 from discord.ext import commands
 
-""" Keep in mind that any administrative function written here, 
-	and added to do_dispatcher and undo_dispatcher, 
-	CAN be called from both admin_do and admin_undo.
-	ie, unban can be called by from admin_undo (ie, !unban x)
-	or it can be called in admin_do, after a temp ban (ie, !ban 5 x <-- will call unban)
-"""
 # helpers
 def voice_kwarg_converter(**kwargs):
 	"""Converts voice kwargs ('mute' or 'deafen') to false, if it exists and is true"""
@@ -18,6 +12,7 @@ def voice_kwarg_converter(**kwargs):
 		t_kwargs[key] = value # add to new kwargs
 	return t_kwargs
 
+#"private" ban functions - not to be called directly
 async def ban(bot, ctx, members, time):
 	inv = (await bot.create_invite(ctx.message.channel)).url
 	msg = 'You have been banned for {} mins.\n. You will be able to use the following invite when your ban is lifted.\n{}'.format(time, inv)
@@ -34,12 +29,12 @@ async def ban(bot, ctx, members, time):
 
 	await bot.say_block(output.strip())
 
-async def unban(bot, ctx, members):
+async def unban(bot, ctx, members, time):
 	bans = await bot.get_bans(ctx.message.server)
 	output = 'Unbanned:\n\t'
 
 	for member in members:
-		if isinstance(member, str): # member is str, unban was called from admin_undo, thus we must find member from bans list
+		if isinstance(member, str): # member is str, !unban called directly (we dont have access to member objs -- banned, not on our server)
 			candidates = [m for m in bans if m.name.lower() == member.lower()]
 			if len(candidates) <= 0:
 				raise commands.BadArgument('"{}" member not found.'.format(member))
@@ -73,7 +68,7 @@ async def disable_voice_state(bot, ctx, members, time, **kwargs):
 	await bot.say_block(output.strip())
 
 
-async def enable_voice_state(bot, ctx, members, **kwargs):
+async def enable_voice_state(bot, ctx, members, time, **kwargs):
 	is_mute = kwargs.get('mute', None)
 	is_deaf = kwargs.get('deafen', None)
 
@@ -91,26 +86,25 @@ async def enable_voice_state(bot, ctx, members, **kwargs):
 
 
 # administrative function dispatchers - (dict of value->function)
-do_dispatcher = {
+# must follow mute/unmute, ban/unban, deafen/undeafen, etc, naming convention
+admin_dispatcher = {
 	'ban' : ban,
-	'voice_state' : disable_voice_state, #mute/deafen/silence
+	'mute' : disable_voice_state,
+	'deafen' : disable_voice_state,
+	'silence' : disable_voice_state,
 	'chatmute' : None,
+
+	#un<func> - naming convention! IMPORTANT!
+	'unban' : unban,
+	'unmute' : enable_voice_state,
+	'undeafen' : enable_voice_state,
+	'unsilence' : enable_voice_state,
+	'unchatmute' : None,
 }
 
-undo_dispatcher = {
-	'ban' : unban,
-	'voice_state' : enable_voice_state, #unmute/undeafen/unsilence
-	'chatmute' : None,
-}
-
-async def admin_do(func_key, bot, ctx, members, time, **kwargs):
-	""" NOTE: Only commands that can specify time (ban/mute/etc) should call this 
-	Parse arguments (check for optional int, convert to member as necessary)
-	and use the do_dispatcher dict to call the appropriate administrative function 
-	Allows us to check for option time arg, which is common procedure for ban/mute/deafen
-	"""
-	
-	# parsing arguments, determining if time was supplied argument or not
+async def administrator(func_key, bot, ctx, members, time=0, **kwargs):
+	#time can be member, or it can be the time specified to admin someone for
+	#or it can be 0 (not passed - ie, unimportant for unban/unmute/undeafen etc)
 	try:
 		time = int(time)
 	except ValueError:
@@ -121,16 +115,10 @@ async def admin_do(func_key, bot, ctx, members, time, **kwargs):
 
 	if len(members) == 0:
 		raise commands.MissingRequiredArgument('Must specify member(s) to {}.'.format(func_key))
-	
+
 	# administration / temp administration (ie, ban / temp ban)
-	await do_dispatcher[func_key](bot, ctx, members, time, **kwargs)
+	await admin_dispatcher[func_key](bot, ctx, members, time, **kwargs) #could be a mute, could be an unmute
 	if time > 0: # temp ban
 		await asyncio.sleep(time)#*60)
-		await undo_dispatcher[func_key](bot, ctx, members, **voice_kwarg_converter(**kwargs))
+		await admin_dispatcher['un'+func_key](bot, ctx, members, 0, **voice_kwarg_converter(**kwargs)) #the 'un' functions don't use time, pass 0
 
-
-async def admin_undo(func_key, bot, ctx, members, **kwargs):
-	"""Only commands that DON'T have the option to specifiy time (ie, unban, unmute) should call this"""
-	if len(members) == 0:
-		raise commands.MissingRequiredArgument('Must specifiy member(s) to {}.'.format(func_key))
-	await undo_dispatcher[func_key](bot, ctx, members, **kwargs)
