@@ -10,7 +10,7 @@ from discord.ext import commands
 """
 # helpers
 def voice_kwarg_converter(**kwargs):
-	""" Turns true kwargs (if key == 'mute' or 'deafen') false."""
+	"""Converts voice kwargs ('mute' or 'deafen') to false, if it exists and is true"""
 	t_kwargs = {}
 	for key, value in kwargs.items():
 		if (key == 'mute' or key == 'deafen') and value == True:
@@ -127,7 +127,7 @@ async def admin_do(func_key, bot, ctx, members, time, **kwargs):
 	if len(members) == 0:
 		raise commands.MissingRequiredArgument('Must specify member(s) to {}.'.format(func_key))
 	
-	# the administration / temp administration (ie, ban / temp ban)
+	# administration / temp administration (ie, ban / temp ban)
 	await do_dispatcher[func_key](bot, ctx, members, time, **kwargs)
 	if time > 0: # temp ban
 		await asyncio.sleep(time)#*60)
