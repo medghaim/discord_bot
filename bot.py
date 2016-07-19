@@ -24,8 +24,6 @@ class ExtendedBot(commands.Bot):
 	def say_block(self, msg, **kwargs):
 		return self.say('```py\n{}\n```'.format(msg), **kwargs)
 
-	#async def ban(member, **kwargs):
-
 bot = ExtendedBot(command_prefix='!', description=description)
 
 @bot.event

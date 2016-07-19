@@ -14,5 +14,10 @@ class Fun():
 		""" YOUR epicly awesome gamertag """
 		await ctx.command.parent.callback(self, ctx.message.author.name)
 
+	@commands.command()
+	async def tupac(self):
+		""" What Tupac has to say about Biggie Smalls and Junior MAFIA """
+		await self.bot.say_block('BIGGIE SMALLS AND JUNIOR M.A.F.I.A SOME MARK ASS BITCHES.')
+
 def setup(bot):
 	bot.add_cog(Fun(bot))

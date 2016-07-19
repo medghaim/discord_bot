@@ -82,32 +82,32 @@ class Administration():
 	@commands.command(pass_context=True)
 	async def mute(self, ctx, time, *members: discord.Member):
 		""" Mutes the mentioned people (temp mute optional) """
-		await admin_utils.administrator('mute', self.bot, ctx, members, time, mute=True) 
+		await admin_utils.administrator('mute', self.bot, ctx, members, time, mute=True, verb='Muted') 
 
 	@commands.command(pass_context=True)
 	async def unmute(self, ctx, *members : discord.Member):
 		""" Unmutes the mentioned people """
-		await admin_utils.administrator('unmute', self.bot, ctx, members, mute=False) 
+		await admin_utils.administrator('unmute', self.bot, ctx, members, mute=False, verb='Unmuted') 
 
 	@commands.command(pass_context=True, aliases=['deaf'])
 	async def deafen(self, ctx, time, *members: discord.Member):
 		""" Deafens the mentioned people (temp deafen optional) """
-		await admin_utils.administrator('deafen', self.bot, ctx, members, time, deafen=True) 
+		await admin_utils.administrator('deafen', self.bot, ctx, members, time, deafen=True, verb='Deafened') 
 
 	@commands.command(pass_context=True, aliases=['undeaf'])
 	async def undeafen(self, ctx, *members : discord.Member):
 		""" Undeafens the mentioned people"""
-		await admin_utils.administrator('undeafen', self.bot, ctx, members, deafen=False)
+		await admin_utils.administrator('undeafen', self.bot, ctx, members, deafen=False, verb='Undeafened')
 
 	@commands.command(pass_context=True, aliases=['sil'])
 	async def silence(self, ctx, time, *members: discord.Member):
 		""" Silences (mute+deafen) the mentioned people (temp silence optional) """
-		await admin_utils.administrator('silence', self.bot, ctx, members, time, mute=True, deafen=True) 
+		await admin_utils.administrator('silence', self.bot, ctx, members, time, mute=True, deafen=True, verb='Silenced') 
 
 	@commands.command(pass_context=True, aliases=['unsil'])
 	async def unsilence(self, ctx, *members : discord.Member):
 		""" Unsilences the mentioned people"""
-		await admin_utils.administrator('unsilence', self.bot, ctx, members, mute=False, deafen=False)
+		await admin_utils.administrator('unsilence', self.bot, ctx, members, mute=False, deafen=False, verb='Unsilenced')
 
 	@commands.command(pass_context=True, aliases=['chmute', 'cmute'])
 	async def chatmute(self, ctx, time, *members : discord.Member):

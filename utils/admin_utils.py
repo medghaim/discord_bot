@@ -9,7 +9,11 @@ def voice_kwarg_converter(**kwargs):
 	for key, value in kwargs.items():
 		if (key == 'mute' or key == 'deafen') and value == True:
 			value = False # flip the value
+		elif key == 'verb': #change verb (muted -> unmuted)
+			value = 'Un'+value.lower()
 		t_kwargs[key] = value # add to new kwargs
+
+
 	return t_kwargs
 
 #"private" ban functions - not to be called directly
@@ -48,15 +52,7 @@ async def unban(bot, ctx, members, time):
 	await bot.say_block(output.strip())
 
 async def disable_voice_state(bot, ctx, members, time, **kwargs):
-	is_mute = kwargs.get('mute', None)
-	is_deaf = kwargs.get('deafen', None)
-
-	if is_mute and is_deaf:
-		verb = 'Silenced'
-	elif is_mute:
-		verb = 'Muted'
-	elif is_deaf:
-		verb = 'Deafened'
+	verb = kwargs.pop('verb', 'VERB ERROR')
 
 	output = '{}:\n\t'.format(verb)
 	if time > 0:
@@ -69,16 +65,7 @@ async def disable_voice_state(bot, ctx, members, time, **kwargs):
 
 
 async def enable_voice_state(bot, ctx, members, time, **kwargs):
-	is_mute = kwargs.get('mute', None)
-	is_deaf = kwargs.get('deafen', None)
-
-	if is_mute == False and is_deaf == False:
-		output = 'Unsilenced:\n\t'
-	elif is_mute == False:
-		output = 'Unmuted:\n\t'
-	elif is_deaf == False:
-		output = 'Undeafened:\n\t'
-
+	output = '{}:\n\t'.format(kwargs.pop('verb', 'VERB ERROR'))
 	for member in members:
 		await bot.server_voice_state(member, **kwargs)
 		output += '{}\n\t'.format(member.name)
